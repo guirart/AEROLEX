@@ -99,3 +99,10 @@
 .document-downloads a:hover{background:#f7fafe;border-color:#c9d7e5}
 .document-downloads svg{width:13px}
 @media(max-width:650px){.document-downloads{grid-template-columns:1fr}}
+
+.ai-responsibility-notice{grid-column:2;align-self:end;margin:28px 48px 22px;padding:13px 16px;border:1px solid #e4d7b7;border-radius:10px;background:#fffaf0;color:#755a25;display:flex;align-items:flex-start;gap:10px;line-height:1.45}
+.ai-responsibility-notice>svg{width:16px;min-width:16px;margin-top:1px}
+.ai-responsibility-notice span{display:flex;flex-direction:column;gap:3px}
+.ai-responsibility-notice strong{font-size:10px}
+.ai-responsibility-notice small{font-size:9px;color:#806d47}
+@media(max-width:900px){.ai-responsibility-notice{grid-column:1;margin:18px 16px}}
