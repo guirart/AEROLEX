@@ -173,5 +173,10 @@ export async function DELETE(request: Request) {
     { method: "DELETE", headers: headers(auth.token) }
   );
 
-  return NextResponse.json({ ok: response.ok }, { status: response.status });
+  if (!response.ok) {
+    const error = await response.text().catch(() => "");
+    return NextResponse.json({ ok: false, error: error || "delete_failed" }, { status: response.status });
+  }
+
+  return NextResponse.json({ ok: true }, { status: 200 });
 }
