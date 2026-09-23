@@ -23,6 +23,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const path = url.searchParams.get("path") || "";
+  const download = url.searchParams.get("download") === "1";
   if (!path || !path.startsWith(auth.userId + "/") || path.includes("..")) {
     return NextResponse.json({ error: "Documento inválido." }, { status: 403 });
   }
@@ -40,7 +41,7 @@ export async function GET(request: Request) {
     status: 200,
     headers: {
       "Content-Type": response.headers.get("content-type") || "application/pdf",
-      "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
+      "Content-Disposition": `${download ? "attachment" : "inline"}; filename*=UTF-8''${encodeURIComponent(filename)}`,
       "Cache-Control": "private, no-store",
       "X-Content-Type-Options": "nosniff",
     },
