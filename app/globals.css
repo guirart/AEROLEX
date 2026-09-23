@@ -121,3 +121,26 @@
 .case-actions .danger svg{width:12px;flex:none}
 
 .case-document-row a{margin-left:auto;display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:700;color:var(--ink);padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}.case-document-row a:hover{background:#f6f7f8}.case-document-row a svg{width:13px;height:13px}
+
+.case-card-click{cursor:pointer}
+.case-expanded{display:grid;gap:12px;margin-top:14px}
+.case-detail-section{border:1px solid var(--line);border-radius:10px;background:#fbfcfd;padding:12px}
+.case-detail-section>h4{margin:0 0 9px;display:flex;align-items:center;gap:7px;font-size:11px;color:#28425c}
+.case-detail-section>h4>b{min-width:20px;padding:2px 6px;border-radius:10px;background:#eaf0f6;font-size:8px;text-align:center}
+.case-detail-section>div>p,.case-detail-section>p{margin:0}
+.case-detail-section>div>p+ p{margin-top:7px}
+.case-detail-section>div>p{padding:8px 9px;border-radius:8px;background:#fff;border:1px solid #edf1f4;font-size:9px;line-height:1.5;color:#53677b}
+.case-detail-section>p{font-size:10px;line-height:1.55;color:#53677b}
+.case-number-detail{margin-top:8px!important;padding:9px 10px!important;background:#fff!important;border:1px solid #edf1f4;border-radius:8px;display:flex!important;flex-direction:column}
+.case-number-detail small{font-size:8px;color:#8492a1}
+.case-number-detail b{margin-top:2px;font-size:10px}
+.case-files-section{background:#f8fbfe}
+.case-documents-list{display:grid;gap:7px}
+.case-document-row{display:flex;align-items:center;gap:9px}
+.case-file-actions{margin-left:auto;display:flex;gap:6px;flex:none}
+.case-file-actions a{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 9px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#3d5872;text-decoration:none;font-size:9px;font-weight:750}
+.case-file-actions a:hover{background:#f3f7fb}
+.case-file-actions svg{width:12px}
+.deadline-detail p{display:flex;align-items:center;gap:6px}
+.deadline-detail svg{width:13px;color:#9a6a15}
+@media(max-width:700px){.case-file-actions{width:100%;margin-left:0}.case-document-row{align-items:flex-start;flex-wrap:wrap}.case-file-actions a{flex:1;justify-content:center}}
