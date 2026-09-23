@@ -23,6 +23,7 @@ type CasePayload = {
   sourceKey?: string;
   category?: string;
   summary?: string;
+  partyDetails?: unknown[];
   facts?: unknown[];
   chronology?: unknown[];
   claims?: unknown[];
@@ -76,6 +77,7 @@ function toRow(body: CasePayload, userId: string) {
     source_key: body.sourceKey || null,
     category: body.category || null,
     summary: body.summary || null,
+    party_details: body.partyDetails || [],
     facts: body.facts || [],
     chronology: body.chronology || [],
     claims: body.claims || [],
