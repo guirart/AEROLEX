@@ -119,3 +119,5 @@
   white-space:nowrap;
 }
 .case-actions .danger svg{width:12px;flex:none}
+
+.case-document-row a{margin-left:auto;display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-size:12px;font-weight:700;color:var(--ink);padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}.case-document-row a:hover{background:#f6f7f8}.case-document-row a svg{width:13px;height:13px}
