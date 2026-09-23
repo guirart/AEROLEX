@@ -106,3 +106,16 @@
 .ai-responsibility-notice strong{font-size:10px}
 .ai-responsibility-notice small{font-size:9px;color:#806d47}
 @media(max-width:900px){.ai-responsibility-notice{grid-column:1;margin:18px 16px}}
+
+/* Fix delete action sizing inside case cards */
+.case-actions .danger{
+  width:auto !important;
+  min-width:max-content;
+  height:29px;
+  padding:0 10px !important;
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+.case-actions .danger svg{width:12px;flex:none}
