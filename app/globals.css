@@ -160,3 +160,32 @@
 
 .case-pdf-preview{display:block;width:100%;height:430px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:12px 0}
 @media(max-width:900px){.case-pdf-preview{height:360px}}
+
+
+/* Collapsible case archive */
+.cases-archive{gap:18px}
+.archive-toolbar>div{display:grid;gap:3px}
+.archive-toolbar small{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6d7d8f}
+.archive-toolbar p{margin:0;color:#8793a2;font-size:9px}
+.case-folder-list{display:grid;gap:10px}
+.case-folder{border:1px solid #dfe6ed;border-radius:13px;background:#fff;overflow:hidden;box-shadow:0 5px 18px #1f324a08}
+.case-folder-head{width:100%;min-height:72px;padding:0 16px;border:0;background:#fff;display:grid;grid-template-columns:38px minmax(0,1fr) auto 24px;align-items:center;gap:10px;text-align:left;cursor:pointer;color:#263d54}
+.case-folder-head:hover{background:#fbfcfe}
+.case-folder-icon{width:34px;height:34px;border-radius:9px;background:#edf4fb;color:#5f8dbd;display:grid;place-items:center}
+.case-folder-icon svg{width:18px}
+.case-folder-title{display:grid;gap:2px;min-width:0}
+.case-folder-title b{font-size:13px}
+.case-folder-title small{font-size:8px;color:#8b97a5}
+.case-folder-count{min-width:34px;height:28px;padding:0 10px;border-radius:999px;background:#f1f4f7;color:#56697d;font-size:10px;font-weight:800;display:grid;place-items:center}
+.case-folder-chevron{width:17px;color:#6c8093;transition:transform .22s ease}
+.case-folder.open .case-folder-chevron{transform:rotate(90deg)}
+.case-folder-collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .24s ease,border-color .24s ease;border-top:1px solid transparent}
+.case-folder.open .case-folder-collapse{grid-template-rows:1fr;border-top-color:#edf1f5}
+.case-folder-inner{overflow:hidden}
+.archive-case-grid{padding:12px}
+.case-folder-empty{padding:16px;color:#8a96a3;font-size:9px;background:#fbfcfd}
+@media(max-width:700px){
+ .case-folder-head{grid-template-columns:34px minmax(0,1fr) auto 20px;padding:0 12px}
+ .case-folder-count{min-width:30px;height:26px}
+ .archive-toolbar{align-items:flex-start}
+}
