@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AeroLex | Inteligência jurídica para Direito Aéreo",
+  title: "AeroJuris | Inteligência jurídica para Direito Aéreo",
   description: "Leitura estruturada de documentos jurídicos com partes, citações, teses, provas e riscos.",
   icons: {
     icon: "/favicon.svg",
