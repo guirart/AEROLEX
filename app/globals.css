@@ -93,3 +93,9 @@
 .case-actions button{max-width:100%;box-sizing:border-box;flex:0 0 auto}
 .case-actions .danger{margin-left:0}
 @media(max-width:650px){.case-actions{display:grid;grid-template-columns:1fr}.case-actions button{width:100%;justify-content:center}}
+
+.document-downloads{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.document-downloads a{height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#3d5872;text-decoration:none;font-size:9px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:6px}
+.document-downloads a:hover{background:#f7fafe;border-color:#c9d7e5}
+.document-downloads svg{width:13px}
+@media(max-width:650px){.document-downloads{grid-template-columns:1fr}}
