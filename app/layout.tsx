@@ -5,8 +5,8 @@ export const metadata: Metadata = {
   title: "AeroVeritas | Inteligência jurídica para Direito Aéreo",
   description: "Leitura estruturada de documentos jurídicos com partes, citações, teses, provas e riscos.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/aeroveritas-favicon.svg?v=2",
+    shortcut: "/aeroveritas-favicon.svg?v=2",
   },
 };
 
