@@ -157,11 +157,3 @@
 .case-document-placeholder{min-height:330px;display:grid;place-items:center;align-content:center;gap:14px;color:#5b7390}
 .case-document-placeholder>svg{width:46px;height:46px;opacity:.55}
 .case-document-placeholder>span{width:100%;margin-top:auto}
-
-.document-downloads button{height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#3d5872;font:inherit;font-size:9px;font-weight:750;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
-.document-downloads button:hover{background:#f7fafe;border-color:#c9d7e5}
-.document-downloads button svg{width:13px}
-.case-relink-button{width:100%;min-height:38px;margin:10px 0 12px;border:1px solid #b9cadb;border-radius:8px;background:#f7fafe;color:#315b79;font:inherit;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
-.case-relink-button:hover{background:#eef5fb}
-.case-relink-button:disabled{opacity:.55;cursor:not-allowed}
-.case-relink-button svg{width:14px}
