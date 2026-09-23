@@ -5,7 +5,7 @@ import { AlertTriangle, BookOpen, Check, CheckCircle2, ChevronRight, CircleUserR
 type Tab = "visao"|"partes"|"citacoes"|"jurisprudencia"|"teses"|"provas"|"riscos";
 type View = "analises"|"casos"|"documentos"|"biblioteca"|"jurisprudencia"|"citacoes-salvas"|"banco-teses";
 type Jurisprudence={id:string;title:string;court:string;reference:string;excerpt:string;page:string;jusbrasilUrl?:string};
-type LegalCase={id:string;title:string;client:string;opponent:string;caseNumber:string;status:"Ativo"|"Aguardando"|"Encerrado";deadline:string;notes:string;documents:string[];updatedAt:string};
+type LegalCase={id:string;title:string;client:string;opponent:string;caseNumber:string;status:"Ativo"|"Aguardando"|"Encerrado";deadline:string;notes:string;documents:string[];updatedAt:string;sourceDocument?:string;sourceKey?:string;category?:string;summary?:string;facts?:unknown[];chronology?:unknown[];claims?:unknown[];theses?:unknown[];evidence?:unknown[];risks?:unknown[];jurisprudence?:unknown[]};
 type SavedCitation={id:string;title:string;text:string;source:string;notes:string};
 type SavedThesis={id:string;title:string;summary:string;foundation:string};
 type Profile={name:string;email:string;oab:string;office:string};
@@ -54,15 +54,19 @@ export default function Home(){
  const [jurisprudences,setJurisprudences]=useState<Jurisprudence[]>(seedJurisprudences);
  const [profile,setProfile]=useState<Profile>({name:"Rafael Andrade",email:"rafaelleao2001@gmail.com",oab:"",office:""});
  const [profileOpen,setProfileOpen]=useState(false); const [toast,setToast]=useState("");
- useEffect(()=>{try{const c=localStorage.getItem("aerolex-citations"),t=localStorage.getItem("aerolex-theses"),p=localStorage.getItem("aerolex-profile");if(c)setSavedCitations(JSON.parse(c));if(t)setSavedTheses(JSON.parse(t));if(p)setProfile(JSON.parse(p));const cs=localStorage.getItem("aerolex-cases");if(cs)setCases(JSON.parse(cs))}catch{}
+ const mapCase=(r:any):LegalCase=>({id:r.id,title:r.title||"Caso sem título",client:r.client||"",opponent:r.opponent||"",caseNumber:r.case_number||"",status:r.status||"Ativo",deadline:r.deadline||"",notes:r.notes||"",documents:Array.isArray(r.documents)?r.documents:[],updatedAt:r.updated_at?new Date(r.updated_at).toLocaleDateString("pt-BR"):"",sourceDocument:r.source_document||undefined,sourceKey:r.source_key||undefined,category:r.category||undefined,summary:r.summary||undefined,facts:r.facts||[],chronology:r.chronology||[],claims:r.claims||[],theses:r.theses||[],evidence:r.evidence||[],risks:r.risks||[],jurisprudence:r.jurisprudence||[]});
+ const loadCases=()=>fetch("/api/cases",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then((rows:unknown)=>{if(Array.isArray(rows))setCases(rows.map(mapCase))}).catch(()=>{});
+ useEffect(()=>{try{const c=localStorage.getItem("aerolex-citations"),t=localStorage.getItem("aerolex-theses"),p=localStorage.getItem("aerolex-profile");if(c)setSavedCitations(JSON.parse(c));if(t)setSavedTheses(JSON.parse(t));if(p)setProfile(JSON.parse(p))}catch{}
+  loadCases();
   fetch(`${SUPABASE_URL}/rest/v1/aerolex_jurisprudence?select=id,title,court,reference,excerpt,page,jusbrasil_url&order=created_at.asc`,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`}})
    .then(r=>r.ok?r.json():Promise.reject(new Error("Supabase indisponível")))
-   .then((rows:unknown)=>{if(Array.isArray(rows)&&rows.length)setJurisprudences(rows.map(r=>({id:r.id,title:r.title,court:r.court,reference:r.reference,excerpt:r.excerpt,page:r.page,jusbrasilUrl:r.jusbrasil_url||undefined})))})
+   .then((rows:unknown)=>{if(Array.isArray(rows)&&rows.length)setJurisprudences(rows.map((r:any)=>({id:r.id,title:r.title,court:r.court,reference:r.reference,excerpt:r.excerpt,page:r.page,jusbrasilUrl:r.jusbrasil_url||undefined})))})
    .catch(()=>{});
  },[]);
+ useEffect(()=>{if(!done||originalFile)return;const autoCase={title:`${parties[0]?.[1]||"Passageiro"} x ${parties[1]?.[1]||"Companhia aérea"}`,client:parties[0]?.[1]||"",opponent:parties[1]?.[1]||"",caseNumber:"",status:"Ativo" as const,deadline:"",notes:"Caso estruturado automaticamente a partir da análise jurídica.",documents:[file],sourceDocument:file,sourceKey:file.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),category:"Direito Aéreo",summary:citations.map(c=>c[2]).slice(0,3).join(" "),facts:citations.map(c=>({page:c[0],title:c[1],text:c[2]})),chronology:[],claims:[],theses:theses.map(t=>({strength:t[0],title:t[1],summary:t[2],foundation:t[3]})),evidence:[],risks:[],jurisprudence};fetch("/api/cases",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(autoCase)}).then(r=>r.ok?r.json():Promise.reject()).then(()=>loadCases()).catch(()=>{})},[done,originalFile,file]);
  const persistCitations=(items:SavedCitation[])=>{setSavedCitations(items);localStorage.setItem("aerolex-citations",JSON.stringify(items))};
  const persistTheses=(items:SavedThesis[])=>{setSavedTheses(items);localStorage.setItem("aerolex-theses",JSON.stringify(items))};
- const persistCases=(items:LegalCase[])=>{setCases(items);localStorage.setItem("aerolex-cases",JSON.stringify(items))};
+ const persistCases=async(items:LegalCase[])=>{setCases(items)};
  const notify=(message:string)=>{setToast(message);setTimeout(()=>setToast(""),1800)};
  const saveCitation=(title:string,text:string,source="Documento analisado")=>{if(savedCitations.some(x=>x.text===text)){notify("Esta citação já está salva");return}persistCitations([...savedCitations,{id:crypto.randomUUID(),title,text,source,notes:""}]);notify("Citação salva")};
  const saveThesis=(title:string,summary:string,foundation:string)=>{if(savedTheses.some(x=>x.title===title)){notify("Esta tese já está no banco");return}persistTheses([...savedTheses,{id:crypto.randomUUID(),title,summary,foundation}]);notify("Tese adicionada ao banco")};
