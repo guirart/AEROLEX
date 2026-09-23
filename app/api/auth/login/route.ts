@@ -6,6 +6,14 @@ import {
   authHeaders,
 } from "@/lib/supabase-auth";
 
+type SupabaseAuthResponse = {
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
+  msg?: string;
+  error_description?: string;
+};
+
 export async function POST(request: Request) {
   const form = await request.formData();
   const email = String(form.get("email") || "").trim();
@@ -22,7 +30,7 @@ export async function POST(request: Request) {
     cache: "no-store",
   });
 
-  const data = await auth.json().catch(() => ({}));
+  const data = (await auth.json().catch(() => ({}))) as SupabaseAuthResponse;
   if (!auth.ok || !data.access_token || !data.refresh_token) {
     const message = encodeURIComponent(data?.msg || data?.error_description || "Email ou senha invalidos");
     return NextResponse.redirect(new URL(`/login?error=${message}`, request.url), 303);
