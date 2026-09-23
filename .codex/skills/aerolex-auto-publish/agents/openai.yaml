@@ -1,0 +1,4 @@
+interface:
+  display_name: "AeroLex Auto Publish"
+  short_description: "Publica automaticamente novos PDFs no AeroLex."
+  default_prompt: "Analise o novo PDF, preserve dados e formatação e publique no AeroLex da Vercel."
