@@ -153,3 +153,7 @@
 .case-analysis-document>a{display:flex;align-items:center;justify-content:center;gap:5px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;text-decoration:none;color:#3f5870;font-size:9px;font-weight:750}
 .case-analysis-list{display:grid;gap:7px}
 .case-analysis-list p{margin:0;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fafbfd;font-size:10px;line-height:1.5;color:#53677b}
+
+.case-document-placeholder{min-height:330px;display:grid;place-items:center;align-content:center;gap:14px;color:#5b7390}
+.case-document-placeholder>svg{width:46px;height:46px;opacity:.55}
+.case-document-placeholder>span{width:100%;margin-top:auto}
