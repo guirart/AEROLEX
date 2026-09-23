@@ -238,6 +238,8 @@ FORMATO EXATO:
     evidence: analysis.evidence || [],
     risks: analysis.risks || [],
     jurisprudence: analysis.jurisprudence || [],
+    citations: analysis.citations || [],
+    page_count: analysis.pageCount || null,
     updated_at: new Date().toISOString(),
   };
 
