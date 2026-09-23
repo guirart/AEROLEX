@@ -194,3 +194,8 @@
 .shell>header .brand{height:68px;min-width:190px;display:flex;align-items:center;overflow:visible}
 .shell>header .brand img{display:block;width:190px;height:48px;max-width:none;object-fit:contain;object-position:left center}
 @media(max-width:650px){.shell>header .brand{height:68px;min-width:132px}.shell>header .brand img{width:132px;height:38px}}
+
+/* Compact Jusbrasil source action: logo only; hover text comes from the link title. */
+.jurisprudence-list .jusbrasil-source{min-width:0;min-height:0;width:auto;height:auto;padding:3px 5px;border:0;border-radius:5px;background:transparent;box-shadow:none}
+.jurisprudence-list .jusbrasil-source:hover,.jurisprudence-list .jusbrasil-source:focus-visible{border:0;box-shadow:none;background:#f4f7fa;outline:1px solid #dce4ec}
+.jurisprudence-list .jusbrasil-source img{width:76px;height:auto;max-width:none}
