@@ -18,15 +18,16 @@ Use esta skill sempre que Rafael enviar um novo PDF jurídico destinado ao AeroL
 5. Para cada precedente identificado, registrar: tribunal, classe/número ou tema, título resumido, página da petição, trecho citado e URL do Jusbrasil. Pesquisar o precedente pelo identificador exato no Jusbrasil e preferir o hyperlink direto da página correspondente. Confirmar que tribunal e número/tema do resultado coincidem com a petição antes de gravar a URL.
 6. Se não for possível confirmar um link direto do Jusbrasil, usar a busca do Jusbrasil com consulta codificada pelo tribunal + identificador do precedente. Nunca inventar URL específica.
 7. Ignorar números que não sejam precedentes, como CPF, CNPJ, protocolos administrativos, valores, datas, números de voo e número do processo principal sem contexto jurisprudencial.
-8. Atualizar integralmente o array `jurisprudences` em `app/page.tsx` para o documento corrente no formato `{id,title,court,reference,excerpt,page,jusbrasilUrl}`. Se não houver jurisprudência citada, deixar o array vazio.
-9. Substitua integralmente no app os dados do caso anterior. Não misture nomes, valores, datas, trechos, miniaturas, jurisprudências ou documentos de casos diferentes.
-10. Copie o PDF original sem qualquer transformação. Confirme por hash que a cópia disponibilizada para download é idêntica ao arquivo enviado.
-11. Gere o PDF analisado adicionando somente anotações e destaques sobrepostos. Não reconstrua o texto, não altere fontes, margens, paginação, espaçamento ou conteúdo.
+8. Persistir toda jurisprudência extraída no projeto Supabase `wefovgbdapaanqqgqapp`, tabela `public.aerolex_jurisprudence`, usando upsert por `id`. Preencher `title`, `court`, `reference`, `excerpt`, `page`, `jusbrasil_url` e `document_name`. A tela do AeroLex lê esta tabela diretamente; o banco é a fonte primária da área de Jurisprudência.
+9. Manter também `seedJurisprudences` em `app/page.tsx` como fallback estático do documento publicado, para que a interface continue funcional se o Supabase estiver temporariamente indisponível. Se não houver jurisprudência citada, usar array vazio.
+10. Substitua integralmente no app os dados do caso anterior. Não misture nomes, valores, datas, trechos, miniaturas, jurisprudências ou documentos de casos diferentes.
+11. Copie o PDF original sem qualquer transformação. Confirme por hash que a cópia disponibilizada para download é idêntica ao arquivo enviado.
+13. Gere o PDF analisado adicionando somente anotações e destaques sobrepostos. Não reconstrua o texto, não altere fontes, margens, paginação, espaçamento ou conteúdo.
 12. Gere a miniatura diretamente da primeira página do PDF original.
-13. Não anonimize nomes, documentos, endereços ou outros dados. A anonimização somente pode ocorrer mediante pedido expresso do usuário para aquele arquivo.
-14. Execute as verificações de compilação e confirme que os botões baixam o PDF original e o PDF marcado corretos.
-15. Publique no projeto de produção vinculado ao domínio `https://aerolex-rho.vercel.app` e aguarde o estado `READY`.
-16. Se a publicação direta pela Vercel não estiver disponível, atualize o repositório `guirart/AEROLEX` para acionar o deploy conectado. Não publique apenas no Sites quando o destino esperado pelo usuário for a Vercel.
+14. Não anonimize nomes, documentos, endereços ou outros dados. A anonimização somente pode ocorrer mediante pedido expresso do usuário para aquele arquivo.
+15. Execute as verificações de compilação e confirme que os botões baixam o PDF original e o PDF marcado corretos.
+16. Publique no projeto de produção vinculado ao domínio `https://aerolex-rho.vercel.app` e aguarde o estado `READY`.
+17. Se a publicação direta pela Vercel não estiver disponível, atualize o repositório `guirart/AEROLEX` para acionar o deploy conectado. Não publique apenas no Sites quando o destino esperado pelo usuário for a Vercel.
 
 ## Validações finais
 
@@ -39,6 +40,7 @@ Antes de concluir, confirme:
 - a ausência de dados herdados da análise anterior;
 - todas as jurisprudências citadas na petição foram extraídas sem falsos positivos;
 - cada jurisprudência possui tribunal e referência conferíveis e hyperlink Jusbrasil direto quando confirmado, ou busca Jusbrasil como fallback;
+- as jurisprudências do documento foram persistidas no Supabase e podem ser recuperadas pela Data API;
 - o deploy de produção com o commit atual e estado `READY`.
 
 Informe o link da Vercel e resuma as partes, o número de páginas e a quantidade de marcações. Caso os dados estejam publicados sem anonimização, deixe isso claro ao usuário.
