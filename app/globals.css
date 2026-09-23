@@ -189,3 +189,8 @@
  .case-folder-count{min-width:30px;height:26px}
  .archive-toolbar{align-items:flex-start}
 }
+
+/* Keep the AeroVeritas mark visible in the fixed top bar. */
+.shell>header .brand{height:68px;min-width:190px;display:flex;align-items:center;overflow:visible}
+.shell>header .brand img{display:block;width:190px;height:48px;max-width:none;object-fit:contain;object-position:left center}
+@media(max-width:650px){.shell>header .brand{height:68px;min-width:132px}.shell>header .brand img{width:132px;height:38px}}
