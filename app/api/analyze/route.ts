@@ -1,4 +1,3 @@
-import { generateText } from "ai";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import {
@@ -148,17 +147,54 @@ FORMATO EXATO:
 
   let analysis: Analysis;
   try {
-    const result = await generateText({
-      model: "openai/gpt-5.6-sol",
-      messages: [{
-        role: "user",
-        content: [
-          { type: "text", text: prompt },
-          { type: "file", data: bytes, mediaType: "application/pdf", filename: file.name },
-        ],
-      }],
+    const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
+    if (!gatewayToken) throw new Error("AI Gateway não está autenticado neste ambiente.");
+
+    const pdfBase64 = Buffer.from(bytes).toString("base64");
+    const gatewayResponse = await fetch("https://ai-gateway.vercel.sh/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${gatewayToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-5.6-sol",
+        input: [{
+          role: "user",
+          content: [
+            { type: "input_text", text: prompt },
+            {
+              type: "input_file",
+              filename: file.name,
+              file_data: `data:application/pdf;base64,${pdfBase64}`,
+            },
+          ],
+        }],
+      }),
     });
-    analysis = cleanJson(result.text);
+
+    const gatewayData = await gatewayResponse.json().catch(() => ({})) as {
+      output_text?: string;
+      output?: Array<{ type?: string; content?: Array<{ type?: string; text?: string }> }>;
+      error?: { message?: string };
+      message?: string;
+    };
+
+    if (!gatewayResponse.ok) {
+      throw new Error(gatewayData.error?.message || gatewayData.message || "Falha no AI Gateway.");
+    }
+
+    const text =
+      gatewayData.output_text ||
+      gatewayData.output
+        ?.flatMap(item => item.content || [])
+        .map(item => item.text || "")
+        .join("\n")
+        .trim() ||
+      "";
+
+    if (!text) throw new Error("A IA retornou uma resposta vazia.");
+    analysis = cleanJson(text);
   } catch (error) {
     return NextResponse.json({
       error: "Não foi possível concluir a análise automática.",
