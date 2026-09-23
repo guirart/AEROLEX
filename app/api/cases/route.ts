@@ -12,8 +12,11 @@ type CasePayload = {
   client?: string;
   opponent?: string;
   caseNumber?: string;
-  status?: "Ativo" | "Aguardando" | "Encerrado";
+  status?: "Ativo" | "Encerrado";
   deadline?: string;
+  deadlineStart?: string;
+  deadlineDays?: number;
+  deadlineBasis?: string;
   notes?: string;
   documents?: string[];
   sourceDocument?: string;
@@ -64,6 +67,9 @@ function toRow(body: CasePayload, userId: string) {
     case_number: body.caseNumber || "",
     status: body.status || "Ativo",
     deadline: body.deadline || null,
+    deadline_start: body.deadlineStart || null,
+    deadline_days: body.deadlineDays || null,
+    deadline_basis: body.deadlineBasis || "CPC",
     notes: body.notes || "",
     documents: body.documents || [],
     source_document: body.sourceDocument || null,
