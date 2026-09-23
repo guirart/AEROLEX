@@ -10,7 +10,7 @@ type SavedCitation={id:string;title:string;text:string;source:string;notes:strin
 type SavedThesis={id:string;title:string;summary:string;foundation:string};
 type Profile={name:string;email:string;oab:string;office:string};
 const tabs:[Tab,string,number?][]=[["visao","Visão geral"],["partes","Partes",2],["citacoes","Citações",4],["jurisprudencia","Jurisprudência"],["teses","Teses",3],["provas","Provas",6],["riscos","Riscos",2]];
-const jurisprudences:Jurisprudence[]=[
+const seedJurisprudences:Jurisprudence[]=[
  {id:"tjpb-ap-0821902",title:"Cancelamento e atraso de voo - responsabilidade objetiva",court:"TJ-PB",reference:"Apelação Cível 0821902-13.2022.8.15.0001",excerpt:"Responsabilidade civil da companhia aérea é objetiva; cancelamento e atraso sem remanejamento ágil ou informações adequadas configuram falha na prestação do serviço.",page:"2-3",jusbrasilUrl:"https://www.jusbrasil.com.br/jurisprudencia/busca?q=TJ-PB+0821902-13.2022.8.15.0001"},
  {id:"tjsp-ap-1004409",title:"Precedente citado no acórdão do TJ-PB",court:"TJ-SP",reference:"Apelação 1004409-71.2018.8.26.0066",excerpt:"Precedente listado como jurisprudência relevante no acórdão transcrito pela petição.",page:"2",jusbrasilUrl:"https://www.jusbrasil.com.br/jurisprudencia/busca?q=TJSP+1004409-71.2018.8.26.0066"},
  {id:"tjsp-ap-1054634",title:"Precedente citado no acórdão do TJ-PB",court:"TJ-SP",reference:"Apelação 1054634-90.2018.8.26.0100",excerpt:"Precedente listado como jurisprudência relevante no acórdão transcrito pela petição.",page:"2",jusbrasilUrl:"https://www.jusbrasil.com.br/jurisprudencia/busca?q=TJSP+1054634-90.2018.8.26.0100"},
@@ -29,6 +29,8 @@ const jurisprudences:Jurisprudence[]=[
  {id:"tjmt-1007914",title:"Precedente da Turma Recursal citado no acórdão",court:"TJ-MT",reference:"1007914-15.2023.8.11.0001",excerpt:"Precedente listado como jurisprudência relevante no acórdão do TJ-MT.",page:"6",jusbrasilUrl:"https://www.jusbrasil.com.br/jurisprudencia/busca?q=TJMT+1007914-15.2023.8.11.0001"},
  {id:"tjmt-ri-1019114",title:"Voo doméstico, manutenção não programada e dano moral",court:"TJ-MT",reference:"Recurso Inominado 10191141420268110001",excerpt:"Atraso de aproximadamente 15 horas, perda de conexão e circunstâncias concretas podem ultrapassar o mero aborrecimento e caracterizar dano moral.",page:"5-6",jusbrasilUrl:"https://www.jusbrasil.com.br/jurisprudencia/busca?q=TJ-MT+10191141420268110001"}
 ];
+const SUPABASE_URL="https://wefovgbdapaanqqgqapp.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_3YTteOF_JIbTVbQcA6vEgQ_PZwBjoxW";
 const jusbrasilSearchUrl=(j:Jurisprudence)=>j.jusbrasilUrl||`https://www.jusbrasil.com.br/jurisprudencia/busca?q=${encodeURIComponent([j.court,j.reference,j.title].filter(Boolean).join(" "))}`;
 const parties=[["Parte autora","Carolina Mendes Ribeiro","Passageira · arquiteta · qualificação no preâmbulo, página 1","CM"],["Parte ré","Brasil Air Transportes S.A.","Transportadora aérea · qualificação no preâmbulo, página 1","BA"]];
 const citations=[
@@ -49,9 +51,15 @@ export default function Home(){
  const [savedCitations,setSavedCitations]=useState<SavedCitation[]>([]);
  const [savedTheses,setSavedTheses]=useState<SavedThesis[]>([]);
  const [cases,setCases]=useState<LegalCase[]>([]);
+ const [jurisprudences,setJurisprudences]=useState<Jurisprudence[]>(seedJurisprudences);
  const [profile,setProfile]=useState<Profile>({name:"Rafael Andrade",email:"rafaelleao2001@gmail.com",oab:"",office:""});
  const [profileOpen,setProfileOpen]=useState(false); const [toast,setToast]=useState("");
- useEffect(()=>{try{const c=localStorage.getItem("aerolex-citations"),t=localStorage.getItem("aerolex-theses"),p=localStorage.getItem("aerolex-profile");if(c)setSavedCitations(JSON.parse(c));if(t)setSavedTheses(JSON.parse(t));if(p)setProfile(JSON.parse(p));const cs=localStorage.getItem("aerolex-cases");if(cs)setCases(JSON.parse(cs))}catch{}},[]);
+ useEffect(()=>{try{const c=localStorage.getItem("aerolex-citations"),t=localStorage.getItem("aerolex-theses"),p=localStorage.getItem("aerolex-profile");if(c)setSavedCitations(JSON.parse(c));if(t)setSavedTheses(JSON.parse(t));if(p)setProfile(JSON.parse(p));const cs=localStorage.getItem("aerolex-cases");if(cs)setCases(JSON.parse(cs))}catch{}
+  fetch(`${SUPABASE_URL}/rest/v1/aerolex_jurisprudence?select=id,title,court,reference,excerpt,page,jusbrasil_url&order=created_at.asc`,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:`Bearer ${SUPABASE_PUBLISHABLE_KEY}`}})
+   .then(r=>r.ok?r.json():Promise.reject(new Error("Supabase indisponível")))
+   .then((rows:any[])=>{if(rows?.length)setJurisprudences(rows.map(r=>({id:r.id,title:r.title,court:r.court,reference:r.reference,excerpt:r.excerpt,page:r.page,jusbrasilUrl:r.jusbrasil_url||undefined})))})
+   .catch(()=>{});
+ },[]);
  const persistCitations=(items:SavedCitation[])=>{setSavedCitations(items);localStorage.setItem("aerolex-citations",JSON.stringify(items))};
  const persistTheses=(items:SavedThesis[])=>{setSavedTheses(items);localStorage.setItem("aerolex-theses",JSON.stringify(items))};
  const persistCases=(items:LegalCase[])=>{setCases(items);localStorage.setItem("aerolex-cases",JSON.stringify(items))};
