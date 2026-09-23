@@ -6,6 +6,12 @@ import {
   SUPABASE_URL,
 } from "@/lib/supabase-auth";
 
+type SupabaseSession = {
+  access_token?: string;
+  refresh_token?: string;
+  expires_in?: number;
+};
+
 async function validAccessToken(token: string) {
   const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -17,7 +23,7 @@ async function validAccessToken(token: string) {
   return response.ok;
 }
 
-async function refreshSession(refreshToken: string) {
+async function refreshSession(refreshToken: string): Promise<SupabaseSession | null> {
   const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
     method: "POST",
     headers: {
@@ -28,7 +34,7 @@ async function refreshSession(refreshToken: string) {
     cache: "no-store",
   });
   if (!response.ok) return null;
-  return response.json();
+  return (await response.json()) as SupabaseSession;
 }
 
 export default async function proxy(request: NextRequest) {
