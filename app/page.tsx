@@ -89,6 +89,7 @@ export default function Home(){
   </section>:<SectionView view={view} file={file} setView={setView} savedCitations={savedCitations} persistCitations={persistCitations} savedTheses={savedTheses} persistTheses={persistTheses} saveCitation={saveCitation} input={input} cases={cases} persistCases={persistCases} jurisprudences={jurisprudences}/>} 
   {profileOpen&&<ProfileModal profile={profile} close={()=>setProfileOpen(false)} save={p=>{setProfile(p);localStorage.setItem("aerolex-profile",JSON.stringify(p));setProfileOpen(false);notify("Perfil atualizado")}}/>}
   {toast&&<div className="toast"><CheckCircle2/> {toast}</div>}
+  <footer className="ai-responsibility-notice"><AlertTriangle/><span><strong>Aviso sobre uso de Inteligência Artificial</strong><small>Sistemas de Inteligência Artificial podem cometer erros, apresentar informações imprecisas ou interpretar incorretamente documentos e fontes. Verifique sempre as informações, citações, jurisprudência, legislação, prazos e demais conteúdos antes de utilizá-los. Toda informação utilizada em petições, pareceres, contratos, manifestações processuais ou quaisquer outras peças jurídicas é de exclusiva responsabilidade do usuário.</small></span></footer>
  </main>
 }
 
