@@ -157,3 +157,6 @@
 .case-document-placeholder{min-height:330px;display:grid;place-items:center;align-content:center;gap:14px;color:#5b7390}
 .case-document-placeholder>svg{width:46px;height:46px;opacity:.55}
 .case-document-placeholder>span{width:100%;margin-top:auto}
+
+.case-pdf-preview{display:block;width:100%;height:430px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:12px 0}
+@media(max-width:900px){.case-pdf-preview{height:360px}}
