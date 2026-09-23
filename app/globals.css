@@ -85,3 +85,11 @@
 .document-thumbnail img{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;background:white}
 .document-thumbnail>span{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-top:1px solid var(--line);background:#fff;color:#45627e;font-size:9px;font-weight:750}
 .document-thumbnail>span svg{width:13px}
+
+/* Keep expanded case controls inside the card */
+.case-card{overflow:hidden}
+.case-expanded{min-width:0;max-width:100%}
+.case-actions{width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.case-actions button{max-width:100%;box-sizing:border-box;flex:0 0 auto}
+.case-actions .danger{margin-left:0}
+@media(max-width:650px){.case-actions{display:grid;grid-template-columns:1fr}.case-actions button{width:100%;justify-content:center}}
