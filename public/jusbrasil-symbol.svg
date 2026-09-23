@@ -1,8 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-<title>Jusbrasil</title>
-<g fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M14 46 28 18" stroke="#F6C40E" stroke-width="11"/>
-  <path d="M32 18 45 45" stroke="#1FA67A" stroke-width="11"/>
-  <path d="M45 45 53 29" stroke="#3278C7" stroke-width="11"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Jusbrasil">
+  <path d="M8 34 20 12" fill="none" stroke="#F5C518" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 12 31 34" fill="none" stroke="#2EA36E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M31 34 40 18" fill="none" stroke="#2F76C5" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
