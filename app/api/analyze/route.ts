@@ -25,6 +25,7 @@ type Analysis = {
   risks: Array<{ page: string; title: string; detail: string }>;
   citations: Array<{ page: string; title: string; text: string; utility: string }>;
   jurisprudence: Array<{ id: string; title: string; court: string; reference: string; excerpt: string; page: string; jusbrasilUrl: string }>;
+  partyDetails: Array<{ role: string; name: string; personType: "PF" | "PJ"; nationality?: string; maritalStatus?: string; profession?: string; cpf?: string; cnpj?: string; address?: string; city?: string; state?: string; cep?: string; legalNature?: string; page?: string }>;
 };
 
 async function session() {
@@ -125,6 +126,7 @@ REGRAS CRÍTICAS:
 8. O title deve ser curto e útil, preferencialmente "Nome do autor x Nome da companhia".
 9. category deve descrever o tipo principal, por exemplo "Atraso de voo", "Cancelamento de voo", "Extravio de bagagem", "Overbooking" ou "Direito Aéreo".
 10. summary deve ter no máximo 700 caracteres e explicar o núcleo fático do caso.
+11. Em partyDetails, extraia a qualificação COMPLETA de cada parte exclusivamente do preâmbulo/cabeçalho: papel processual, nome/razão social, PF/PJ, nacionalidade, estado civil, profissão, CPF ou CNPJ, endereço completo, cidade, UF, CEP, natureza jurídica e página. Não invente nem complete dados ausentes.
 
 FORMATO EXATO:
 {
@@ -135,6 +137,7 @@ FORMATO EXATO:
   "caseNumber": "",
   "category": "",
   "summary": "",
+  "partyDetails": [{"role":"Parte autora","name":"","personType":"PF","nationality":"","maritalStatus":"","profession":"","cpf":"","cnpj":"","address":"","city":"","state":"","cep":"","legalNature":"","page":""}],
   "facts": [{"page":"","title":"","text":""}],
   "chronology": [{"page":"","date":"","event":""}],
   "claims": [{"page":"","title":"","value":"","text":""}],
@@ -231,6 +234,7 @@ FORMATO EXATO:
     source_key: hash,
     category: analysis.category || "Direito Aéreo",
     summary: analysis.summary || "",
+    party_details: analysis.partyDetails || [],
     facts: analysis.facts || [],
     chronology: analysis.chronology || [],
     claims: analysis.claims || [],
