@@ -203,3 +203,8 @@
 /* Show only the Jusbrasil symbol, hiding the wordmark inside the source image. */
 .jurisprudence-list .jusbrasil-source{width:34px;height:34px;padding:5px;overflow:hidden;justify-content:flex-start;background:transparent!important;outline:0!important}
 .jurisprudence-list .jusbrasil-source img{width:118px;height:23px;max-width:none;object-fit:contain;object-position:left center}
+
+/* Vector-only Jusbrasil action. */
+.jurisprudence-list .jusbrasil-source{width:30px;height:30px;padding:2px;overflow:visible;display:inline-flex;align-items:center;justify-content:center;background:transparent!important;border:0!important;box-shadow:none!important;outline:0!important}
+.jurisprudence-list .jusbrasil-source:hover,.jurisprudence-list .jusbrasil-source:focus-visible{background:#f4f7fa!important;border-radius:6px;outline:1px solid #dce4ec!important}
+.jurisprudence-list .jusbrasil-source img{display:block;width:24px;height:24px;max-width:24px;object-fit:contain;object-position:center}
