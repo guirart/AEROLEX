@@ -80,3 +80,8 @@
 .case-document-row small{margin-top:2px;font-size:8px;color:#8a96a3}
 .case-documents>p{margin:0!important;padding:8px 0!important;background:transparent!important;color:#7f8b99;font-size:9px}
 @media(max-width:850px){.case-card.expanded{grid-column:auto}.case-actions{flex-wrap:wrap}.case-actions button{flex:1;justify-content:center}}
+
+.document-thumbnail{display:block;position:relative;margin:12px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f6f8fb;text-decoration:none;color:inherit}
+.document-thumbnail img{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;background:white}
+.document-thumbnail>span{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-top:1px solid var(--line);background:#fff;color:#45627e;font-size:9px;font-weight:750}
+.document-thumbnail>span svg{width:13px}
