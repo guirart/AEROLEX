@@ -106,18 +106,34 @@ export async function POST(request: Request) {
 
   const body = (await request.json()) as CasePayload;
   const row = toRow(body, auth.userId);
-  const url = row.source_key
-    ? `${SUPABASE_URL}/rest/v1/aerolex_cases?on_conflict=user_id,source_key`
-    : `${SUPABASE_URL}/rest/v1/aerolex_cases`;
 
-  const response = await fetch(url, {
+  if (row.source_key) {
+    const findResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/aerolex_cases?select=id&source_key=eq.${encodeURIComponent(row.source_key)}&limit=1`,
+      { headers: headers(auth.token), cache: "no-store" }
+    );
+
+    const found = (await findResponse.json().catch(() => [])) as Array<{ id?: string }>;
+    const existingId = found[0]?.id;
+
+    if (existingId) {
+      const updateResponse = await fetch(
+        `${SUPABASE_URL}/rest/v1/aerolex_cases?id=eq.${encodeURIComponent(existingId)}`,
+        {
+          method: "PATCH",
+          headers: { ...headers(auth.token), Prefer: "return=representation" },
+          body: JSON.stringify(row),
+        }
+      );
+
+      const updated = await updateResponse.json().catch(() => ({}));
+      return NextResponse.json(updated, { status: updateResponse.status });
+    }
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/aerolex_cases`, {
     method: "POST",
-    headers: {
-      ...headers(auth.token),
-      Prefer: row.source_key
-        ? "resolution=merge-duplicates,return=representation"
-        : "return=representation",
-    },
+    headers: { ...headers(auth.token), Prefer: "return=representation" },
     body: JSON.stringify(row),
   });
 
