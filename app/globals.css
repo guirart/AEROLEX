@@ -218,3 +218,18 @@
 .party-fields p strong{font-size:13px;font-weight:600;color:#23344d;line-height:1.4;overflow-wrap:anywhere}
 .party-fields p:nth-last-child(-n+3){grid-column:auto}
 @media(max-width:760px){.party-fields{grid-template-columns:1fr}.party-qualification section>label{position:static;margin-top:8px}}
+
+/* Legal library with official legislation sources */
+.legal-library{display:flex;flex-direction:column;gap:24px}
+.legal-library-group{display:flex;flex-direction:column;gap:12px}
+.legal-library-group-head{display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+.legal-library-group-head span{display:flex;align-items:center;gap:8px;color:#173b67}
+.legal-library-group-head span svg{width:17px;height:17px}
+.legal-library-group-head small{color:#7b8ba0}
+.legal-applicability{margin-top:14px;padding:10px 12px;border-radius:10px;background:#f6f8fb;display:flex;flex-direction:column;gap:4px}
+.legal-applicability b{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#6e7f95}
+.legal-applicability span{font-size:12px;color:#40536b;line-height:1.45}
+.library-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.library-actions a,.library-actions button{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:7px 10px;border:1px solid #dce4ec;border-radius:8px;background:#fff;color:#25476e;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer}
+.library-actions a:hover,.library-actions button:hover{background:#f4f7fa;border-color:#c7d4e2}
+.library-actions svg{width:14px;height:14px}
