@@ -158,7 +158,7 @@ function SectionView({view,file,setView,savedCitations,persistCitations,savedThe
   <div className="section-toolbar"><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={`Buscar em ${title.toLowerCase()}`}/></div>
   {view==="casos"&&<Cases items={cases} update={persistCases} currentFile={file} onOpen={onOpenCase} query={query}/>} 
   {view==="documentos"&&<div className="document-table"><div className="table-head"><span>Documento</span><span>Status</span><span>Tipo</span><span></span></div><div className="table-row"><i><FileText/></i><span><b>{file}</b><small>Adicionado hoje · 7 páginas</small></span><em>Análise validada</em><small>Petição inicial</small><button onClick={()=>setView("analises")}>Abrir <ChevronRight/></button></div></div>}
-  {view==="biblioteca"&&<Library query={query} saveCitation={saveCitation}/>} 
+  {view==="biblioteca"&&<Library query={query} saveCitation={saveCitation} cases={cases}/>} 
   {view==="jurisprudencia"&&<JurisprudenceLibrary items={jurisprudences} query={query}/>} 
   {view==="citacoes-salvas"&&<SavedCitations items={savedCitations.filter(x=>(x.title+x.text+x.source).toLowerCase().includes(query.toLowerCase()))} update={persistCitations}/>} 
   {view==="banco-teses"&&<SavedTheses items={savedTheses.filter(x=>(x.title+x.summary+x.foundation).toLowerCase().includes(query.toLowerCase()))} update={persistTheses}/>} 
@@ -213,26 +213,54 @@ function Cases({items,update,currentFile,onOpen,query}:{items:LegalCase[];update
  </div>
 }
 
-function Library({query,saveCitation}:{query:string;saveCitation:(a:string,b:string,c?:string)=>void}){
- const refs=[
-  {title:"Código de Defesa do Consumidor",meta:"Lei nº 8.078/1990",tag:"Consumidor",text:"Base geral para relações de consumo, práticas abusivas, dever de informação, responsabilidade do fornecedor e inversão do ônus da prova.",source:"CDC · Lei nº 8.078/1990",url:"https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",cases:"Cobrança indevida · transporte aéreo · serviços digitais"},
-  {title:"Código de Processo Civil",meta:"Lei nº 13.105/2015",tag:"Processo Civil",text:"Regras processuais gerais, tutela de urgência, ônus da prova, citação, prazos e procedimento civil.",source:"CPC · Lei nº 13.105/2015",url:"https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm",cases:"Tutela de urgência · produção de prova · prazos"},
-  {title:"Código Civil",meta:"Lei nº 10.406/2002",tag:"Contratos e Obrigações",text:"Disciplina obrigações, contratos, inadimplemento, responsabilidade civil, validade dos negócios jurídicos e reparação de danos.",source:"Código Civil · Lei nº 10.406/2002",url:"https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm",cases:"Descumprimento contratual · responsabilidade civil"},
-  {title:"Código Brasileiro de Aeronáutica",meta:"Lei nº 7.565/1986",tag:"Direito Aéreo",text:"Regras especiais do Direito Aeronáutico brasileiro, incluindo transporte aéreo e responsabilidade do transportador.",source:"CBA · Lei nº 7.565/1986",url:"https://www.planalto.gov.br/ccivil_03/leis/l7565compilado.htm",cases:"Atraso · cancelamento · extravio de bagagem · transporte aéreo"},
-  {title:"Resolução ANAC nº 400",meta:"Condições Gerais de Transporte Aéreo",tag:"Direito Aéreo",text:"Regulamenta direitos e deveres dos passageiros, assistência material, atraso, cancelamento, interrupção e preterição.",source:"ANAC · Resolução nº 400/2016",url:"https://www.anac.gov.br/assuntos/legislacao/direitos-e-deveres-dos-passageiros",cases:"Atraso · cancelamento · reacomodação · assistência material"},
-  {title:"Marco Civil da Internet",meta:"Lei nº 12.965/2014",tag:"Direito Digital",text:"Estabelece princípios, garantias, direitos e deveres para uso da internet no Brasil, inclusive direitos do usuário e qualidade contratada da conexão.",source:"Marco Civil · Lei nº 12.965/2014",url:"https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm",cases:"Serviço de internet · direitos do usuário · provedores"},
-  {title:"Lei Geral de Telecomunicações",meta:"Lei nº 9.472/1997",tag:"Telecomunicações",text:"Organiza os serviços de telecomunicações e estrutura a regulação do setor, incluindo a atuação da Anatel.",source:"LGT · Lei nº 9.472/1997",url:"https://www.planalto.gov.br/ccivil_03/leis/l9472.htm",cases:"Internet residencial · telecomunicações · serviços regulados"},
-  {title:"Decreto do SAC",meta:"Decreto nº 11.034/2022",tag:"Consumidor",text:"Estabelece diretrizes e normas para Serviço de Atendimento ao Consumidor em serviços regulados, inclusive reclamação, contestação, suspensão e cancelamento.",source:"Decreto nº 11.034/2022",url:"https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/decreto/d11034.htm",cases:"Cancelamento contratual · protocolos · atendimento ao consumidor"}
+function Library({query,saveCitation,cases}:{query:string;saveCitation:(a:string,b:string,c?:string)=>void;cases:LegalCase[]}){
+ const [openCase,setOpenCase]=useState<string|null>(cases[0]?.id||null);
+ const legislation=[
+  {id:"cdc",title:"Código de Defesa do Consumidor",meta:"Lei nº 8.078/1990",area:"Consumidor",text:"Relações de consumo, práticas abusivas, dever de informação, responsabilidade objetiva e inversão do ônus da prova.",source:"CDC · Lei nº 8.078/1990",url:"https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"},
+  {id:"cpc",title:"Código de Processo Civil",meta:"Lei nº 13.105/2015",area:"Processo Civil",text:"Tutela de urgência, ônus da prova, citação, prazos, produção de prova e regras gerais do procedimento civil.",source:"CPC · Lei nº 13.105/2015",url:"https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13105.htm"},
+  {id:"cc",title:"Código Civil",meta:"Lei nº 10.406/2002",area:"Contratos e Obrigações",text:"Obrigações, contratos, inadimplemento, validade dos negócios jurídicos, responsabilidade civil e reparação de danos.",source:"Código Civil · Lei nº 10.406/2002",url:"https://www.planalto.gov.br/ccivil_03/leis/2002/l10406compilada.htm"},
+  {id:"cba",title:"Código Brasileiro de Aeronáutica",meta:"Lei nº 7.565/1986",area:"Direito Aéreo",text:"Regime jurídico do transporte aéreo e regras específicas sobre atividade aeronáutica e responsabilidade do transportador.",source:"CBA · Lei nº 7.565/1986",url:"https://www.planalto.gov.br/ccivil_03/leis/l7565compilado.htm"},
+  {id:"anac400",title:"Resolução ANAC nº 400",meta:"Condições Gerais de Transporte Aéreo",area:"Direito Aéreo",text:"Direitos do passageiro em atraso, cancelamento, interrupção, reacomodação, assistência material e preterição.",source:"ANAC · Resolução nº 400/2016",url:"https://www.anac.gov.br/assuntos/legislacao/direitos-e-deveres-dos-passageiros"},
+  {id:"mci",title:"Marco Civil da Internet",meta:"Lei nº 12.965/2014",area:"Direito Digital",text:"Princípios, garantias, direitos e deveres para uso da internet no Brasil, inclusive direitos do usuário e prestação de conexão.",source:"Marco Civil · Lei nº 12.965/2014",url:"https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm"},
+  {id:"lgt",title:"Lei Geral de Telecomunicações",meta:"Lei nº 9.472/1997",area:"Telecomunicações",text:"Estrutura os serviços de telecomunicações e a regulação setorial exercida pela Anatel.",source:"LGT · Lei nº 9.472/1997",url:"https://www.planalto.gov.br/ccivil_03/leis/l9472.htm"},
+  {id:"sac",title:"Decreto do SAC",meta:"Decreto nº 11.034/2022",area:"Consumidor",text:"Normas sobre atendimento, reclamação, contestação, suspensão e cancelamento em serviços regulados.",source:"Decreto nº 11.034/2022",url:"https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/decreto/d11034.htm"}
  ];
- const q=query.trim().toLowerCase();
- const filtered=refs.filter(x=>(x.title+x.meta+x.tag+x.text+x.cases).toLowerCase().includes(q));
- const groups=Array.from(new Set(filtered.map(x=>x.tag)));
- return <div className="legal-library">
-  {groups.map(group=><section className="legal-library-group" key={group}><div className="legal-library-group-head"><span><BookOpen/><b>{group}</b></span><small>{filtered.filter(x=>x.tag===group).length} referência(s)</small></div><div className="library-grid">{filtered.filter(x=>x.tag===group).map(x=><article key={x.title}><label>{x.tag}</label><h3>{x.title}</h3><small>{x.meta}</small><p>{x.text}</p><div className="legal-applicability"><b>Pertinente a</b><span>{x.cases}</span></div><div className="library-actions"><a href={x.url} target="_blank" rel="noopener noreferrer" title={"Acessar "+x.title+" na fonte oficial"}><ExternalLink/> Acessar fonte oficial</a><button onClick={()=>saveCitation(x.title,x.text,x.source)}><Highlighter/> Salvar como citação</button></div></article>)}</div></section>)}
-  {!filtered.length&&<EmptyCollection icon={<BookOpen/>} title="Nenhuma legislação encontrada" text="Tente buscar pelo nome da lei, área jurídica ou assunto do caso."/>}
+ const relevantFor=(item:LegalCase)=>{
+  const hay=[item.title,item.category,item.summary,item.notes,item.client,item.opponent].filter(Boolean).join(" ").toLowerCase();
+  const ids=new Set<string>(["cpc"]);
+  if(/aéreo|aereo|voo|companhia aérea|bagagem|reacomoda|overbooking|passageir/.test(hay)){ids.add("cdc");ids.add("cba");ids.add("anac400");}
+  if(/internet|telecom|conecta|serviço digital|servico digital|cancelamento contratual|cobrança|cobranca|débito|debito/.test(hay)){ids.add("cdc");ids.add("cc");ids.add("mci");ids.add("lgt");ids.add("sac");}
+  if(/contrato|contratual|inadimplement|obrigação|obrigacao/.test(hay)){ids.add("cc");}
+  if(ids.size===1){ids.add("cdc");ids.add("cc");}
+  return legislation.filter(l=>ids.has(l.id));
+ };
+ const normalized=query.trim().toLowerCase();
+ const visibleCases=cases.filter(item=>{
+  const laws=relevantFor(item);
+  const hay=[item.title,item.category,item.client,item.opponent,...laws.flatMap(l=>[l.title,l.meta,l.area,l.text])].join(" ").toLowerCase();
+  return !normalized||hay.includes(normalized);
+ });
+ return <div className="case-law-library">
+  <div className="library-intro-card"><div><span className="library-intro-icon"><BookOpen/></span><div><b>Legislação organizada por caso</b><p>Cada pasta mostra somente as normas relacionadas ao caso selecionado, com acesso direto à fonte oficial.</p></div></div><small>{visibleCases.length} caso(s) encontrado(s)</small></div>
+  <div className="case-law-folders">
+   {visibleCases.map(item=>{const laws=relevantFor(item);const open=openCase===item.id;return <section className={"case-law-folder "+(open?"open":"")} key={item.id}>
+    <button className="case-law-folder-head" onClick={()=>setOpenCase(open?null:item.id)}>
+     <span className="case-law-case-icon"><FolderOpen/></span>
+     <span className="case-law-case-title"><small>{item.category||"Caso jurídico"}</small><b>{item.title||[item.client,item.opponent].filter(Boolean).join(" x ")}</b><em>{item.status} · {laws.length} norma(s) pertinente(s)</em></span>
+     <span className="case-law-count">{laws.length}</span>
+     <ChevronRight className="case-law-chevron"/>
+    </button>
+    {open&&<div className="case-law-body"><div className="case-law-grid">{laws.map((x,index)=><article key={x.id}>
+      <div className="law-card-top"><span>{String(index+1).padStart(2,"0")}</span><label>{x.area}</label></div>
+      <h3>{x.title}</h3><small>{x.meta}</small><p>{x.text}</p>
+      <div className="law-case-relevance"><b>Aplicação neste caso</b><span>{item.category||item.summary||"Fundamento legal relacionado ao caso selecionado."}</span></div>
+      <div className="library-actions"><a href={x.url} target="_blank" rel="noopener noreferrer" title={"Acessar "+x.title+" na fonte oficial"}><ExternalLink/> Acessar legislação</a><button onClick={()=>saveCitation(x.title,x.text,x.source)}><Highlighter/> Salvar referência</button></div>
+    </article>)}</div></div>}
+   </section>})}
+  </div>
+  {!visibleCases.length&&<EmptyCollection icon={<BookOpen/>} title="Nenhum caso ou legislação encontrada" text="Tente buscar pelo nome do caso, parte, área jurídica ou legislação."/>}
  </div>
 }
-
 function SavedCitations({items,update}:{items:SavedCitation[];update:(x:SavedCitation[])=>void}){const [custom,setCustom]=useState(false);const [draft,setDraft]=useState({title:"",text:"",source:"",notes:""});const add=()=>{if(!draft.title.trim()||!draft.text.trim())return;update([...items,{...draft,id:crypto.randomUUID()}]);setDraft({title:"",text:"",source:"",notes:""});setCustom(false)};return <>{custom&&<div className="editor-card"><div><b>Nova citação</b><button onClick={()=>setCustom(false)}><X/></button></div><input placeholder="Título ou assunto" value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/><textarea placeholder="Cole aqui o trecho da jurisprudência" value={draft.text} onChange={e=>setDraft({...draft,text:e.target.value})}/><input placeholder="Tribunal, processo, relator ou fonte" value={draft.source} onChange={e=>setDraft({...draft,source:e.target.value})}/><button className="primary action-button" onClick={add}><Save/> Salvar citação</button></div>}<button className="outline-action" onClick={()=>setCustom(true)}><Plus/> Nova citação manual</button>{items.length?<div className="saved-list">{items.map(x=><article key={x.id}><div><label>Citação salva</label><button className="danger" onClick={()=>update(items.filter(y=>y.id!==x.id))}><Trash2/></button></div><h3>{x.title}</h3><blockquote>“{x.text}”</blockquote><small>{x.source||"Fonte não informada"}</small></article>)}</div>:<EmptyCollection icon={<Highlighter/>} title="Nenhuma citação salva" text="Salve trechos da análise, da biblioteca ou cadastre uma jurisprudência manualmente."/>}</>}
 
 function SavedTheses({items,update}:{items:SavedThesis[];update:(x:SavedThesis[])=>void}){const [custom,setCustom]=useState(false);const [draft,setDraft]=useState({title:"",summary:"",foundation:""});const add=()=>{if(!draft.title.trim()||!draft.summary.trim())return;update([...items,{...draft,id:crypto.randomUUID()}]);setDraft({title:"",summary:"",foundation:""});setCustom(false)};return <>{custom&&<div className="editor-card"><div><b>Nova tese</b><button onClick={()=>setCustom(false)}><X/></button></div><input placeholder="Nome da tese" value={draft.title} onChange={e=>setDraft({...draft,title:e.target.value})}/><textarea placeholder="Estruture o argumento principal" value={draft.summary} onChange={e=>setDraft({...draft,summary:e.target.value})}/><input placeholder="Fundamento legal ou jurisprudencial" value={draft.foundation} onChange={e=>setDraft({...draft,foundation:e.target.value})}/><button className="primary action-button" onClick={add}><Save/> Salvar tese</button></div>}<button className="outline-action" onClick={()=>setCustom(true)}><Plus/> Nova tese manual</button>{items.length?<div className="saved-list thesis-bank">{items.map(x=><article key={x.id}><div><label>Tese jurídica</label><button className="danger" onClick={()=>update(items.filter(y=>y.id!==x.id))}><Trash2/></button></div><h3>{x.title}</h3><p>{x.summary}</p><small><Scale/> {x.foundation||"Fundamento a complementar"}</small></article>)}</div>:<EmptyCollection icon={<Scale/>} title="Seu banco de teses está vazio" text="Salve uma tese identificada na análise ou cadastre sua própria estrutura argumentativa."/>}</>}
