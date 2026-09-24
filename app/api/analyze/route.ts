@@ -76,13 +76,16 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const file = form.get("file");
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Envie um arquivo PDF." }, { status: 400 });
+    return NextResponse.json({ error: "Envie um arquivo PDF ou DOCX." }, { status: 400 });
   }
-  if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-    return NextResponse.json({ error: "O arquivo precisa ser PDF." }, { status: 400 });
+  const lowerName = file.name.toLowerCase();
+  const isPdf = file.type === "application/pdf" || lowerName.endsWith(".pdf");
+  const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || lowerName.endsWith(".docx");
+  if (!isPdf && !isDocx) {
+    return NextResponse.json({ error: "O arquivo precisa ser PDF ou DOCX." }, { status: 400 });
   }
   if (file.size > 20 * 1024 * 1024) {
-    return NextResponse.json({ error: "O PDF excede o limite de 20 MB." }, { status: 413 });
+    return NextResponse.json({ error: "O documento excede o limite de 20 MB." }, { status: 413 });
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
@@ -99,7 +102,7 @@ export async function POST(request: Request) {
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,
         Authorization: `Bearer ${auth.token}`,
-        "Content-Type": "application/pdf",
+        "Content-Type": isPdf ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "x-upsert": "true",
       },
       body: bytes,
@@ -113,16 +116,16 @@ export async function POST(request: Request) {
 
   const prompt = `Você é o motor de estruturação jurídica do AeroLex/AeroVeritas, especializado em Direito Aéreo brasileiro.
 
-Analise integralmente o PDF anexado e devolva APENAS um objeto JSON válido, sem markdown e sem comentários.
+Analise integralmente o documento anexado (PDF ou DOCX) e devolva APENAS um objeto JSON válido, sem markdown e sem comentários.
 
 REGRAS CRÍTICAS:
 1. Identifique autor/cliente e réu/oponente SOMENTE pelo preâmbulo, cabeçalho processual ou campo equivalente. Nunca trate como parte alguém citado em jurisprudência, narrativa, doutrina ou prova.
 2. Não invente dados. Quando algo não estiver no documento, use string vazia, null ou array vazio.
 3. Preserve nomes e dados como aparecem. Não anonimize.
 4. Extraia fatos, cronologia, pedidos, teses, provas, riscos e citações com página.
-5. Em jurisprudence inclua APENAS precedentes efetivamente citados no PDF. Ignore CPF, CNPJ, protocolos, valores, datas, voos e o número do processo principal.
+5. Em jurisprudence inclua APENAS precedentes efetivamente citados no documento. Ignore CPF, CNPJ, protocolos, valores, datas, voos e o número do processo principal.
 6. Para cada jurisprudência, monte jusbrasilUrl como busca do Jusbrasil usando tribunal + referência exata, salvo se o próprio PDF contiver URL direta.
-7. pageCount deve refletir o número de páginas do PDF.
+7. pageCount deve refletir o número de páginas renderizadas/informadas no documento quando determinável; se não for possível determinar com segurança em DOCX, use null.
 8. O title deve ser curto e útil, preferencialmente "Nome do autor x Nome da companhia".
 9. category deve descrever o tipo principal, por exemplo "Atraso de voo", "Cancelamento de voo", "Extravio de bagagem", "Overbooking" ou "Direito Aéreo".
 10. summary deve ter no máximo 700 caracteres e explicar o núcleo fático do caso.
@@ -153,7 +156,8 @@ FORMATO EXATO:
     const gatewayToken = process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN;
     if (!gatewayToken) throw new Error("AI Gateway não está autenticado neste ambiente.");
 
-    const pdfBase64 = Buffer.from(bytes).toString("base64");
+    const documentBase64 = Buffer.from(bytes).toString("base64");
+    const documentMime = isPdf ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     const gatewayResponse = await fetch("https://ai-gateway.vercel.sh/v1/responses", {
       method: "POST",
       headers: {
@@ -169,7 +173,7 @@ FORMATO EXATO:
             {
               type: "input_file",
               filename: file.name,
-              file_data: `data:application/pdf;base64,${pdfBase64}`,
+              file_data: `data:${documentMime};base64,${documentBase64}`,
             },
           ],
         }],
@@ -228,7 +232,7 @@ FORMATO EXATO:
     deadline_start: null,
     deadline_days: null,
     deadline_basis: "CPC",
-    notes: "Caso estruturado automaticamente a partir do PDF enviado.",
+    notes: `Caso estruturado automaticamente a partir do ${isPdf ? "PDF" : "DOCX"} enviado.`,
     documents: [storagePath],
     source_document: file.name,
     source_key: hash,
